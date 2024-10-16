@@ -13,11 +13,11 @@ public:
     // Stores grid reference
     int (&grid)[9][9];
 
+    // 3D tensor that stores the possible values of every cell
+    std::vector<int> possibilities_tensor[9][9];
+
     // Class variable checks if any change happened between cycles
     bool change_happened = 1;
-
-    // Class variable vector for possible values of any cell
-    std::vector<int> possibilities; 
 
     // Constructor
     Sudoku(int (&inputGrid)[9][9]);
@@ -31,17 +31,15 @@ public:
     // Method to see if the sudoku is finished(1), in progress(0) or stuck(2)
     int is_finished();
 
-    // Method to test by elimination
-    void eliminiation();
+    // Method to set the 3D possibilities tensor 
+    void initalize_possibilities_tensor();
 
-    // Method to eliminate possibilites by looking at the row
-    void test_row(int i);
+    // Method to use the possibilities tensor
+    void use_possibilities_tensor();
 
-    // Method to eliminate possibilites by looking at the column
-    void test_column(int j);
+    // Method to update the possibilities tensor
+    void update_possibilities_tensor();
 
-    // Method to eliminate possibilites by looking at the box
-    void test_box(int i, int j);
 
 
 };
