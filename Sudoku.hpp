@@ -19,6 +19,9 @@ public:
     // Class variable checks if any change happened between cycles
     bool change_happened = 1;
 
+    // Class variable to store temportary possibilities vector info
+    std::vector<int> temp_possibilities;
+
     // Constructor
     Sudoku(int (&inputGrid)[9][9]);
 
@@ -37,8 +40,11 @@ public:
     // Method to use the possibilities tensor
     void use_possibilities_tensor();
 
-    // Method to update the possibilities tensor
+    // Method to test rows, columns and boxes to eliminate impossibilities from the possibilities_tensor
     void update_possibilities_tensor();
+
+    // Method to use the hidden singles technique
+    void hidden_singles();
 
 
 
