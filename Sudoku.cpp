@@ -23,29 +23,23 @@ void Sudoku::show() {
 // Method to solve the sudoku
 void Sudoku::solve() {
     initalize_possibilities_tensor();
-    while (is_finished() == 0){
-        // Sudoku is in progress
+    while (is_finished() == 0){ // Sudoku is in progress
         change_happened = 0; // Reset change verifier
 
-        // Check and update the possibilities_tensor
-        update_possibilities_tensor();
+        update_possibilities_tensor(); // Check and update the possibilities_tensor
 
-        // Technique 1; Hidden singles
-        hidden_singles();
+        hidden_singles(); // Technique 1; Hidden singles
 
-        // Use possibilities_tensor on grid
-        use_possibilities_tensor();
+        use_possibilities_tensor(); // Use possibilities_tensor on grid
     }
     
 
     if (is_finished() == 1){
-        // Sudoki is completed
-        std::cout << "The sudoku is completed!" << std::endl;
+        std::cout << "The sudoku is completed!" << std::endl; // Sudoki is completed
     }
 
     else if (is_finished() == 2){
-        // Sudoku is stuck
-        std::cout << "The solver is stuck." << std::endl;
+        std::cout << "The solver is stuck." << std::endl; // Sudoku is stuck
     }
 }
 
@@ -56,14 +50,15 @@ int Sudoku::is_finished() {
         for (int j=0; j<9; j++) {
             if (grid[i][j] == 0){
                 if (change_happened == 0){
-                    return 2; // The grid isn't complete and there was not change in the previous cycle so we are stuck.
+                    // The grid isn't complete and there was not change in the previous cycle so we are stuck.
+                    return 2;
                     }
-                return 0; // Sudoku not finished yet
+                return 0; // Sudoku is still in progress
             }
         }
     }
 
-    return 1; // No 0 in the grid, the sudoku is finished
+    return 1; // No empty cell is left, the sudoku is finished
 }
 
 
@@ -148,44 +143,47 @@ void Sudoku::update_possibilities_tensor(){
             }
         }
     }
-    
+
 
 // Method to use the hidden singles technique
 void Sudoku::hidden_singles(){
     for (int cell_i=0; cell_i<9; cell_i++){
         for (int cell_j=0; cell_j<9; cell_j++){
-            // Use hidden singles technique on the rows
-            temp_possibilities = possibilities_tensor[cell_i][cell_j];
-            for (int j=0; j<9; j++){
-                if (j != cell_j){
-                    for (const int& value : possibilities_tensor[cell_i][j]){
-                    auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
-                        if (it != temp_possibilities.end()) {
-                            // If it exists, remove it from possibilities
-                            temp_possibilities.erase(it);
-                            }
-                        }   
-                    }
-                    if (temp_possibilities.size() == 1){
-                        possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
-                        }
-                }
-            
+            if (grid[cell_i][cell_j] == 0){
 
-            // Use hidden singles technique on the columns
-            temp_possibilities = possibilities_tensor[cell_i][cell_j];
-            for (int i=0; i<9; i++){
-                if (i != cell_i){
-                    for (const int& value : possibilities_tensor[i][cell_j]){
-                    auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
-                        if (it != temp_possibilities.end()) {
-                            // If it exists, remove it from possibilities
-                            temp_possibilities.erase(it);
+                // Use hidden singles technique on the rows
+                temp_possibilities = possibilities_tensor[cell_i][cell_j];
+                for (int j=0; j<9; j++){
+                    if (j != cell_j){
+                        for (const int& value : possibilities_tensor[cell_i][j]){
+                            auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
+                            if (it != temp_possibilities.end()) {
+                                // If it exists, remove it from possibilities
+                                temp_possibilities.erase(it);
+                                }
+                            }   
+                        }
+                    }
+                    if (temp_possibilities.size() == 1){
+                            possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
+                        }
+                
+
+                // Use hidden singles technique on the columns
+                temp_possibilities = possibilities_tensor[cell_i][cell_j];
+                for (int i=0; i<9; i++){
+                    if (i != cell_i){
+                        for (const int& value : possibilities_tensor[i][cell_j]){
+                            auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
+                                if (it != temp_possibilities.end()) {
+                                    // If it exists, remove it from possibilities
+                                    temp_possibilities.erase(it);
+                                    }
                             }
                         }
                     }
                     if (temp_possibilities.size() == 1){
-                        possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
+                            possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
                         }
                 }
             }

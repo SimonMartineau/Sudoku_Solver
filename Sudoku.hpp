@@ -46,6 +46,9 @@ public:
     // Method to use the hidden singles technique
     void hidden_singles();
 
+    // Debug
+    void debug();
+
 
 
 };
