@@ -155,6 +155,7 @@ void Sudoku::hidden_singles(){
                 temp_possibilities = possibilities_tensor[cell_i][cell_j];
                 for (int j=0; j<9; j++){
                     if (j != cell_j){
+                        // If the examined cell isn't our current cell
                         for (const int& value : possibilities_tensor[cell_i][j]){
                             auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
                             if (it != temp_possibilities.end()) {
@@ -164,15 +165,16 @@ void Sudoku::hidden_singles(){
                             }   
                         }
                     }
-                    if (temp_possibilities.size() == 1){
-                            possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
-                        }
+                if (temp_possibilities.size() == 1){
+                        possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
+                    }
                 
 
                 // Use hidden singles technique on the columns
                 temp_possibilities = possibilities_tensor[cell_i][cell_j];
                 for (int i=0; i<9; i++){
                     if (i != cell_i){
+                        // If the examined cell isn't our current cell
                         for (const int& value : possibilities_tensor[i][cell_j]){
                             auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
                                 if (it != temp_possibilities.end()) {
@@ -182,9 +184,35 @@ void Sudoku::hidden_singles(){
                             }
                         }
                     }
-                    if (temp_possibilities.size() == 1){
-                            possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
+                if (temp_possibilities.size() == 1){
+                        possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
+                    }
+                
+                // Use hidden singles technique on the boxes
+                // Error
+                temp_possibilities = possibilities_tensor[cell_i][cell_j];
+                int I = cell_i/3; // row index of the box the cell is in.
+                int J = cell_j/3; // column index of the box the cell is in.
+                for (int offset_i=0; offset_i<3; offset_i++){
+                    for (int offset_j=0; offset_j<3; offset_j++){
+                        if (3*I + offset_i == cell_i && 3*J + offset_j == cell_j){}
+                        else{
+                            // If the examined cell isn't our current cell
+                            for (const int& value : possibilities_tensor[3*I + offset_i][3*J + offset_j]){
+                                auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
+                                if (it != temp_possibilities.end()) {
+                                    // If it exists, remove it from possibilities
+                                    temp_possibilities.erase(it);
+                                    }
+                                }   
+                            }
                         }
+                    }
+                if (temp_possibilities.size() == 1){
+                        possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
+                    }
+                // Error
+
                 }
             }
         } 
