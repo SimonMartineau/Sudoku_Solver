@@ -1,4 +1,5 @@
 // Code by Simon Martineau
+// simon.martineau@ensta-bretagne.org
 
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
@@ -28,6 +29,13 @@ public:
     // Class variable to count the number of empty cells at the end
     int zeros_counter = 0;
 
+    // Class variables to count the number of times each technique is used
+    int obvious_singles_counter = 0;
+    int obvious_pairs_counter = 0;
+    int hidden_singles_counter = 0;
+    int hidden_pairs_counter = 0;
+
+
     // Constructor
     Sudoku(int (&inputGrid)[9][9]);
 
@@ -55,8 +63,17 @@ public:
     // Method that uses the hidden singles technique
     void hidden_singles();
 
+    // Method that uses the hidden pairs technique
+    void hidden_pairs();
+
     // Method that uses the hidden pairs technique on rows
     void hidden_row_pairs();
+
+    // Method that uses the hidden pairs technique on columns
+    void hidden_column_pairs();
+
+    // Method that uses the hidden pairs technique on boxes
+    void hidden_box_pairs();
 
     // Final verification
     void verify();
