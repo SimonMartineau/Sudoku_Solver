@@ -22,6 +22,12 @@ public:
     // Class variable to store temportary possibilities vector info
     std::vector<int> temp_possibilities;
 
+    // Class variable to store number of loops
+    int loop_counter = 0;
+
+    // Class variable to count the number of empty cells at the end
+    int zeros_counter = 0;
+
     // Constructor
     Sudoku(int (&inputGrid)[9][9]);
 
@@ -38,19 +44,22 @@ public:
     void initalize_possibilities_tensor();
 
     // Method to use the possibilities tensor
-    void use_possibilities_tensor();
+    void update_grid();
 
-    // Method to test rows, columns and boxes to eliminate impossibilities from the possibilities_tensor
-    void update_possibilities_tensor();
+    // Method that uses the obvious singles technique
+    void obvious_singles();
 
-    // Method to use the hidden singles technique
+    // Method that uses the obvious pairs technique
+    void obvious_pairs();
+
+    // Method that uses the hidden singles technique
     void hidden_singles();
+
+    // Method that uses the hidden pairs technique on rows
+    void hidden_row_pairs();
 
     // Debug
     void debug();
-
-
-
 };
 
 #endif
