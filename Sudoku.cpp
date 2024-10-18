@@ -6,7 +6,7 @@
 // Constructor
 Sudoku::Sudoku(int (&inputGrid)[9][9]): grid(inputGrid) {
     // No copying any array necessary, grid is a reference to inputGrid
-    }
+}
 
 
 // Method to print the sudoku
@@ -16,22 +16,22 @@ void Sudoku::show() {
             std::cout << grid[i][j] << " ";
             if (grid[i][j] == 0){
                 zeros_counter++;
-                }
             }
-        std::cout << std::endl;
         }
+        std::cout << std::endl;
+    }
 
     if (zeros_counter > 0){
         std::cout << zeros_counter << " empty cells left" << "\n";
-        }
     }
+}
 
 
 // Method to solve the sudoku
 void Sudoku::solve() {
     initalize_possibilities_tensor();
     while (is_finished() == 0){ // Sudoku is in progress
-        loop_counter++;
+        loop_counter++; // Increment the loop counter
         change_happened = 0; // Reset change verifier
 
         obvious_singles(); // Technique 1: Obvious singles
@@ -48,13 +48,13 @@ void Sudoku::solve() {
 
     if (is_finished() == 1){
         std::cout << "The sudoku is completed!" << std::endl; // Sudoki is completed
-        }
+    }
 
     else if (is_finished() == 2){
         std::cout << "The solver is stuck." << std::endl; // Sudoku is stuck
-        }
-    std::cout << "loop_counter = " << loop_counter << "\n";
     }
+    std::cout << "loop_counter = " << loop_counter << "\n";
+}
 
 
 // Method to see if the sudoku is finished(1), in progress(0) or stuck(2)
@@ -65,14 +65,14 @@ int Sudoku::is_finished() {
                 if (change_happened == 0){
                     // The grid isn't complete and there was not change in the previous cycle so we are stuck.
                     return 2;
-                    }
-                return 0; // Sudoku is still in progress
                 }
+                return 0; // Sudoku is still in progress
             }
         }
+    }
 
     return 1; // No empty cell is left, the sudoku is finished
-    }
+}
 
 
 // Set the 3D possibilities tensor 
@@ -82,14 +82,14 @@ void Sudoku::initalize_possibilities_tensor(){
             if (grid[i][j] == 0){
                 // If the cell is empty, every value is possible in the beginning.
                 possibilities_tensor[i][j].assign({1, 2, 3, 4, 5, 6, 7, 8, 9});
-                }
+            }
             else{
                 // If the cell is filled, the possible value is already fixed.
                 possibilities_tensor[i][j].assign({grid[i][j]});
-                }
             }
         }
     }
+}
 
 
 // Method to use the possibilities tensor
@@ -99,10 +99,10 @@ void Sudoku::update_grid(){
             if(possibilities_tensor[i][j].size() == 1 && grid[i][j] == 0){
                 grid[i][j] = possibilities_tensor[i][j][0];
                 change_happened = 1; // The grid was updated, the process is still going
-                }
             }
         }
     }
+}
 
 
 // Method that uses the obvious singles technique
@@ -118,8 +118,8 @@ void Sudoku::obvious_singles(){
                 if (it != possibilities_tensor[cell_i][cell_j].end()) {
                     // If it exists, remove it from possibilities
                     possibilities_tensor[cell_i][cell_j].erase(it);
-                    }
                 }
+            }
 
 
             // Eliminate impossibilities according to the column
@@ -131,8 +131,8 @@ void Sudoku::obvious_singles(){
                 if (it != possibilities_tensor[cell_i][cell_j].end()) {
                     // If it exists, remove it from possibilities
                     possibilities_tensor[cell_i][cell_j].erase(it);
-                    }
                 }
+            }
 
 
             // Eliminate impossibilities according to the box
@@ -148,14 +148,14 @@ void Sudoku::obvious_singles(){
                     if (it != possibilities_tensor[cell_i][cell_j].end()) {
                         // If it exists, remove it from possibilities
                         possibilities_tensor[cell_i][cell_j].erase(it);
-                }
-            }
-        }
-
-
             }
         }
     }
+
+
+        }
+    }
+}
 
 
 // Method to use the hidden singles technique
@@ -174,14 +174,14 @@ void Sudoku::hidden_singles(){
                             if (it != temp_possibilities.end()) {
                                 // If it exists, remove it from possibilities
                                 temp_possibilities.erase(it);
-                                }
-                            }   
-                        }
+                            }
+                        }   
                     }
+                }
                 if (temp_possibilities.size() == 1){
                         possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
                         change_happened = 1; // The grid was updated, the process is still going
-                    }
+                }
                 
 
                 // Use hidden singles technique on the columns
@@ -191,17 +191,17 @@ void Sudoku::hidden_singles(){
                         // If the examined cell isn't our current cell
                         for (const int& value : possibilities_tensor[i][cell_j]){
                             auto it = std::find(temp_possibilities.begin(), temp_possibilities.end(), value);
-                                if (it != temp_possibilities.end()) {
-                                    // If it exists, remove it from possibilities
-                                    temp_possibilities.erase(it);
-                                    }
+                            if (it != temp_possibilities.end()) {
+                                // If it exists, remove it from possibilities
+                                temp_possibilities.erase(it);
                             }
                         }
                     }
+                }
                 if (temp_possibilities.size() == 1){
                         possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
                         change_happened = 1; // The grid was updated, the process is still going
-                    }
+                }
                 
                 // Use hidden singles technique on the boxes
                 temp_possibilities = possibilities_tensor[cell_i][cell_j];
@@ -217,20 +217,19 @@ void Sudoku::hidden_singles(){
                                 if (it != temp_possibilities.end()) {
                                     // If it exists, remove it from possibilities
                                     temp_possibilities.erase(it);
-                                    }
-                                }   
-                            }
+                                }
+                            }   
                         }
                     }
+                }
                 if (temp_possibilities.size() == 1){
                         possibilities_tensor[cell_i][cell_j] = {temp_possibilities[0]};
                         change_happened = 1; // The grid was updated, the process is still going
-                    }
-
                 }
             }
-        } 
-    }
+        }
+    } 
+}
 
 
 // Method that uses the obvious pairs technique
@@ -252,13 +251,12 @@ void Sudoku::obvious_pairs(){
                                         // If it exists, remove it from possibilities
                                         possibilities_tensor[cell_i][elem_j].erase(it);
                                         change_happened = 1;
-                                        std::cout << "hi" << "\n";
-                                        }
-                                    }   
-                                }
+                                    }
+                                }   
                             }
-                        }  
-                    }
+                        }
+                    }  
+                }
                 
                 // Using hidden pairs technique on the columns
                 for (int i=0; i<9; i++){
@@ -273,13 +271,12 @@ void Sudoku::obvious_pairs(){
                                         // If it exists, remove it from possibilities
                                         possibilities_tensor[elem_i][cell_j].erase(it);
                                         change_happened = 1;
-                                        std::cout << "hi" << "\n";
-                                        }
-                                    }   
-                                }
+                                    }
+                                }   
                             }
-                        }  
-                    }
+                        }
+                    }  
+                }
 
                 // Using hidden pairs technique on the boxes
                 int I = cell_i/3;
@@ -297,27 +294,94 @@ void Sudoku::obvious_pairs(){
                                             if (it != possibilities_tensor[3*I+offset_elem_i][3*J+offset_elem_j].end()) {
                                                 // If it exists, remove it from possibilities
                                                 possibilities_tensor[3*I+offset_elem_i][3*J+offset_elem_j].erase(it);
-                                                change_happened = 1;
-                                                std::cout << "hi" << "\n";
-                                                }
+                                            change_happened = 1;
                                             }
                                         }
                                     }
                                 }
-                            }  
-                        }
+                            }
+                        }  
                     }
                 }
             }
         }
     }
+}
 
 
+// To keep going
 // Method that uses the hidden pairs technique on rows
-void Sudoku::hidden_row_pairs(){
-    for (int j=0; j<9; j++){
-        // Navigating every row of the sudoku
-        
+void Sudoku::hidden_row_pairs(){}
 
-        }    
+
+// Final verification
+void Sudoku::verify(){
+    int problem_flag = 0;
+    // Check the rows
+    for (int i=0; i<9; i++){
+        for (int n=1; n<=9; n++){
+            // Testing that every number is in every row
+            bool found = false;  // Flag to track if the number is found
+            for (int j=0; j<9; j++){
+                if (grid[i][j] == n){
+                    found = true; // Exit the inner loop as the number is found
+                    break;
+                }
+            }
+            if (!found) {
+                std::cout << "Sudoku error: " << n << " not found on row " << i << "\n";
+                problem_flag = 1;
+            }
+        }
     }
+
+
+    // Check the columns
+    for (int j=0; j<9; j++){
+        for (int n=1; n<=9; n++){
+            // Testing that every number is in every column
+            bool found = false;  // Flag to track if the number is found
+            for (int i=0; i<9; i++){
+                if (grid[i][j] == n){
+                    found = true; // Exit the inner loop as the number is found
+                    break;
+                }
+            }
+            if (!found) {
+                std::cout << "Sudoku error: " << n << " not found on column " << j << "\n";
+                problem_flag = 1;
+            }
+        }
+    }
+
+
+    // Check the boxes
+    for (int I=0; I<3; I++){
+        for (int J=0; J<3; J++){
+            // Going through each box
+            for (int n=1; n<=9; n++){
+                // Testing that every number is in every column
+                bool found = false;  // Flag to track if the number is found
+                for (int offset_i=0; offset_i<3; offset_i++){
+                    for (int offset_j=0; offset_j<3; offset_j++){
+                        // Going through each cell in the box
+                        if (grid[3*I+offset_i][3*J+offset_j] == n){
+                            found = true; // Exit the inner loop as the number is found
+                            break;
+                        }
+                    }
+                    if (found) {
+                        break; // Break out of the outer loop as well when n is found
+                    }
+                }
+                if (!found) {
+                        std::cout << "Sudoku error: " << n << " not found in box " << I << "," << J <<" \n";
+                        problem_flag = 1;
+                    }
+            }
+        }
+    }
+    if (!problem_flag){
+        std::cout << "The solution has been checked and has no problems." << "\n";
+    }
+}

@@ -58,8 +58,8 @@ public:
     // Method that uses the hidden pairs technique on rows
     void hidden_row_pairs();
 
-    // Debug
-    void debug();
+    // Final verification
+    void verify();
 };
 
 #endif
