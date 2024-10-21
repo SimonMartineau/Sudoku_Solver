@@ -16,6 +16,7 @@ int main(){
         {0, 0, 0, 0, 5, 0, 0, 0, 0},
         {0, 2, 0, 0, 0, 0, 9, 0, 0}
     };
+    
     Sudoku sudoku(grid);
     sudoku.solve();
     sudoku.show();
