@@ -45,7 +45,7 @@ void Sudoku::solve() {
 
         hidden_pairs(); // Technique 4: Hidden pairs
 
-        update_grid(); // Use possibilities_tensor on grid
+        update_grid(); // Use possibilities_tensor on grid     
         }
     
     if (is_finished() == 1){
@@ -121,31 +121,35 @@ void Sudoku::obvious_singles(){
         for (int cell_j=0; cell_j<9; cell_j++){
             // Eliminate impossibilities according to the row
             for (int j=0; j<9; j++){
-                int value = grid[cell_i][j]; // Value of the cell being scanned
-
-                // Check if the value exists in possibilities
-                auto it = std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), value);
-                if (it != possibilities_tensor[cell_i][cell_j].end()) {
-                    // If it exists, remove it from possibilities
-                    possibilities_tensor[cell_i][cell_j].erase(it);
-                    change_happened = 1;
-                    obvious_singles_counter++;
-                }
+                if (j != cell_j){
+                    int value = grid[cell_i][j]; // Value of the cell being scanned
+                    // Check if the value exists in possibilities
+                    auto it = std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), value);
+                    if (it != possibilities_tensor[cell_i][cell_j].end()) {
+                        // If it exists, remove it from possibilities
+                        possibilities_tensor[cell_i][cell_j].erase(it);
+                        change_happened = 1;
+                        obvious_singles_counter++;
+                    }      
+                }  
             }
 
 
             // Eliminate impossibilities according to the column
             for (int i=0; i<9; i++){
-                int value = grid[i][cell_j]; // Value of the cell being scanned
+                if (i != cell_i){
+                    int value = grid[i][cell_j]; // Value of the cell being scanned
 
-                // Check if the value exists in possibilities
-                auto it = std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), value);
-                if (it != possibilities_tensor[cell_i][cell_j].end()) {
-                    // If it exists, remove it from possibilities
-                    possibilities_tensor[cell_i][cell_j].erase(it);
-                    change_happened = 1;
-                    obvious_singles_counter++;
+                    // Check if the value exists in possibilities
+                    auto it = std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), value);
+                    if (it != possibilities_tensor[cell_i][cell_j].end()) {
+                        // If it exists, remove it from possibilities
+                        possibilities_tensor[cell_i][cell_j].erase(it);
+                        change_happened = 1;
+                        obvious_singles_counter++;
+                    }
                 }
+                
             }
 
 
@@ -155,20 +159,21 @@ void Sudoku::obvious_singles(){
             
             for (int offset_i=0; offset_i<3; offset_i++){
                 for (int offset_j=0; offset_j<3; offset_j++){
-                    int value = grid[3*I + offset_i][3*J + offset_j]; // Value of the cell being scanned
+                    if (3*I+offset_i == cell_i && 3*J+offset_j == cell_j){}
+                    else{
+                        int value = grid[3*I + offset_i][3*J + offset_j]; // Value of the cell being scanned
 
-                    // Check if the value exists in possibilities
-                    auto it = std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), value);
-                    if (it != possibilities_tensor[cell_i][cell_j].end()) {
-                        // If it exists, remove it from possibilities
-                        possibilities_tensor[cell_i][cell_j].erase(it);
-                        change_happened = 1;
-                        obvious_singles_counter++;
+                        // Check if the value exists in possibilities
+                        auto it = std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), value);
+                        if (it != possibilities_tensor[cell_i][cell_j].end()) {
+                            // If it exists, remove it from possibilities
+                            possibilities_tensor[cell_i][cell_j].erase(it);
+                            change_happened = 1;
+                            obvious_singles_counter++;
+                        }
+                    }
+                }
             }
-        }
-    }
-
-
         }
     }
 }
@@ -370,6 +375,7 @@ void Sudoku::hidden_row_pairs(){
         }
 
         if (number_of_doubles >=2){
+            // If we have 2 numbers that appear twice at least in the possibilities_tensor
             for (int j1=0; j1<8; j1++){
                 for (int j2=j1+1; j2<9; j2++){
                     for (int elem1=0; elem1<dual_possibilities_numbers.size()-1; elem1++){
@@ -413,7 +419,6 @@ void Sudoku::hidden_column_pairs(){
             }
         }
 
-        
         std::vector<int> dual_possibilities_numbers; // Store the numbers that appear twice
         int number_of_doubles = 0;
         for (int n=1; n<=9; n++){
@@ -421,7 +426,6 @@ void Sudoku::hidden_column_pairs(){
                 // Check to see if any numbers appear twice
                 dual_possibilities_numbers.push_back(n);
                 number_of_doubles++;
-
             }
         }
 
@@ -466,7 +470,7 @@ void Sudoku::hidden_box_pairs(){
                     int cell_i = 3*I + offset_i;
                     int cell_j = 3*J + offset_j;
                     for (int n=1; n<=9; n++){
-                        if (std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), n) != possibilities_tensor[cell_i][cell_j].end()) {
+                        if (std::find(possibilities_tensor[cell_i][cell_j].begin(), possibilities_tensor[cell_i][cell_j].end(), n) != possibilities_tensor[cell_i][cell_j].end()){
                             // The value n is found in the vector possibilities_tensor[i][j]
                             appearance_array[n]++; // Increment the number of appearances of number n
                         }
@@ -481,46 +485,43 @@ void Sudoku::hidden_box_pairs(){
                     // Check to see if any numbers appear twice
                     dual_possibilities_numbers.push_back(n);
                     number_of_doubles++;
-
                 }
             }
 
             if (number_of_doubles >=2){
                 // If we have 2 numbers that appear twice at least in the possibilities_tensor
-                for (int offset_i1=0; offset_i1<3; offset_i1++){
-                    for (int offset_j1=0; offset_j1<3; offset_j1++){
-                        for (int offset_i2=0; offset_i2<3; offset_i2++){
-                            for (int offset_j2=0; offset_j2<3; offset_j2++){
+                for (int index1=0; index1<8; index1++){
+                    for (int index2=index1+1; index2<9; index2++){
+                        for (int elem1=0; elem1<dual_possibilities_numbers.size()-1; elem1++){
+                            for (int elem2=elem1+1; elem2<dual_possibilities_numbers.size(); elem2++){
                                 // We define the offsets for the position of the 2 cells in the box
-                                if (offset_i1 == offset_j1 && offset_j1 == offset_j2){}
-                                else{
-                                    // The 2 cells must be different
-                                    int cell_i1 = 3*I + offset_i1;
-                                    int cell_i2 = 3*I + offset_i2;
-                                    int cell_j1 = 3*J + offset_j2;
-                                    int cell_j2 = 3*J + offset_j2;                                    
+                                int offset_i1 = index1 / 3; // Row number for cell 1
+                                int offset_j1 = index1 % 3; // Column number for cell 1
+                                int offset_i2 = index2 / 3; // Row number for cell 2
+                                int offset_j2 = index2 % 3; // Column number for cell 2
 
-                                    for (int elem1=0; elem1<dual_possibilities_numbers.size()-1; elem1++){
-                                        for (int elem2=elem1+1; elem2<dual_possibilities_numbers.size(); elem2++){
-                                            // We increment through 2 numbers in the list of numbers that appear twice in the possibilities_tensor in these cells
-                                            if (std::find(possibilities_tensor[cell_i1][cell_j1].begin(), possibilities_tensor[cell_i1][cell_j1].end(), dual_possibilities_numbers[elem1]) != possibilities_tensor[cell_i1][cell_j1].end()
-                                                && std::find(possibilities_tensor[cell_i1][cell_j1].begin(), possibilities_tensor[cell_i1][cell_j1].end(), dual_possibilities_numbers[elem2]) != possibilities_tensor[cell_i1][cell_j1].end()
-                                                && std::find(possibilities_tensor[cell_i2][cell_j2].begin(), possibilities_tensor[cell_i2][cell_j2].end(), dual_possibilities_numbers[elem1]) != possibilities_tensor[cell_i2][cell_j2].end()
-                                                && std::find(possibilities_tensor[cell_i2][cell_j2].begin(), possibilities_tensor[cell_i2][cell_j2].end(), dual_possibilities_numbers[elem2]) != possibilities_tensor[cell_i2][cell_j2].end()){
+                                int cell_i1 = 3*I + offset_i1;
+                                int cell_i2 = 3*I + offset_i2;
+                                int cell_j1 = 3*J + offset_j1;
+                                int cell_j2 = 3*J + offset_j2;                                    
 
-                                                    // We reduce the number of possibilities to just these 2 as the technique shows.
-                                                    if (possibilities_tensor[cell_i1][cell_j1].size() > 2 || possibilities_tensor[cell_i2][cell_j2].size() > 2){
-                                                        // A change only happened if the possibilities_tensor reduces in size
-                                                        hidden_pairs_counter++;
-                                                        change_happened = 1;
-                                                    }
-
-                                                    possibilities_tensor[cell_i1][cell_j1] = {dual_possibilities_numbers[elem1], dual_possibilities_numbers[elem2]};
-                                                    possibilities_tensor[cell_i2][cell_j2] = {dual_possibilities_numbers[elem1], dual_possibilities_numbers[elem2]};
-                                                    return;  // We exit the function as soon as we find a hidden pair                     
-                                            }
+                        
+                                // We increment through 2 numbers in the list of numbers that appear twice in the possibilities_tensor in these cells
+                                if (std::find(possibilities_tensor[cell_i1][cell_j1].begin(), possibilities_tensor[cell_i1][cell_j1].end(), dual_possibilities_numbers[elem1]) != possibilities_tensor[cell_i1][cell_j1].end()
+                                    && std::find(possibilities_tensor[cell_i1][cell_j1].begin(), possibilities_tensor[cell_i1][cell_j1].end(), dual_possibilities_numbers[elem2]) != possibilities_tensor[cell_i1][cell_j1].end()
+                                    && std::find(possibilities_tensor[cell_i2][cell_j2].begin(), possibilities_tensor[cell_i2][cell_j2].end(), dual_possibilities_numbers[elem1]) != possibilities_tensor[cell_i2][cell_j2].end()
+                                    && std::find(possibilities_tensor[cell_i2][cell_j2].begin(), possibilities_tensor[cell_i2][cell_j2].end(), dual_possibilities_numbers[elem2]) != possibilities_tensor[cell_i2][cell_j2].end()){
+                                        
+                                        // We reduce the number of possibilities to just these 2 as the technique shows.
+                                        if (possibilities_tensor[cell_i1][cell_j1].size() > 2 || possibilities_tensor[cell_i2][cell_j2].size() > 2){
+                                            // A change only happened if the possibilities_tensor reduces in size
+                                            hidden_pairs_counter++;
+                                            change_happened = 1;
                                         }
-                                    }
+
+                                        possibilities_tensor[cell_i1][cell_j1] = {dual_possibilities_numbers[elem1], dual_possibilities_numbers[elem2]};
+                                        possibilities_tensor[cell_i2][cell_j2] = {dual_possibilities_numbers[elem1], dual_possibilities_numbers[elem2]};
+                                        return;  // We exit the function as soon as we find a hidden pair                     
                                 }
                             }
                         }
